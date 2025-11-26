@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: notes-app
+    env: python
+    plan: free
+    repo: "" # Optional: fill in if you want render to auto-connect
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app -b 0.0.0.0:$PORT"
+    autoDeploy: true
