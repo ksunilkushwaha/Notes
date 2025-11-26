@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Notes Hub - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <h1 class="text-white text-center mb-3">Welcome to Notes Hub! 📚</h1>
+            <p class="text-white text-center lead">Share and access study notes across 5 subjects</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="row">
+                {% for subject_key, subject_name in subjects.items() %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <a href="/subject/{{ subject_key }}" style="text-decoration: none; color: inherit;">
+                            <div class="card subject-card">
+                                <div class="subject-icon">
+                                    {% if subject_key == 'physics' %}🔬
+                                    {% elif subject_key == 'math' %}🔢
+                                    {% elif subject_key == 'computer' %}💻
+                                    {% elif subject_key == 'english' %}📖
+                                    {% elif subject_key == 'engineering_drawing' %}📐
+                                    {% endif %}
+                                </div>
+                                <h5 class="card-title">{{ subject_name }}</h5>
+                                <p class="text-muted">Click to view notes</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Have notes to share?</h5>
+                    <p class="card-text">Upload your study materials and help your classmates!</p>
+                    <a href="/upload" class="btn btn-primary btn-lg">📤 Upload Notes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

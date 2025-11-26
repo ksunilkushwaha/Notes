@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Notes - Notes Hub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="text-white mb-4">📤 Upload Your Notes</h2>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Select Subject</label>
+                            <select class="form-select" id="subject" name="subject" required>
+                                <option value="">-- Choose a subject --</option>
+                                {% for subject_key, subject_name in subjects.items() %}
+                                    <option value="{{ subject_key }}">{{ subject_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Select Image File</label>
+                            <input type="file" class="form-control" id="file" name="file" accept="image/*" required>
+                            <small class="text-muted">Supported formats: PNG, JPG, JPEG, GIF, BMP (Max 16MB)</small>
+                        </div>
+
+                        <div id="preview" class="mb-3" style="display: none;">
+                            <p class="form-label">Preview:</p>
+                            <img id="previewImage" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: 10px;">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Upload</button>
+                    </form>
+
+                    <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Uploading and processing your image...</p>
+                    </div>
+
+                    <div id="successMessage" style="display: none; margin-top: 20px;">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Success!</strong> Your notes have been uploaded successfully. Redirecting...
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+
+                    <div id="errorMessage" style="display: none; margin-top: 20px;">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Error!</strong> <span id="errorText"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">💡 Tips:</h5>
+                    <ul>
+                        <li>Make sure the image is clear and readable</li>
+                        <li>Images larger than 1200x1200 will be automatically resized</li>
+                        <li>Large files will be compressed to save space</li>
+                        <li>Everyone can view and download your notes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Preview image before upload
+    document.getElementById('file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('previewImage').src = event.target.result;
+                document.getElementById('preview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const subject = document.getElementById('subject').value;
+        const file = document.getElementById('file').files[0];
+
+        if (!subject || !file) {
+            document.getElementById('errorText').textContent = 'Please select both subject and file';
+            document.getElementById('errorMessage').style.display = 'block';
+            return;
+        }
+
+        // Show loading
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('errorMessage').style.display = 'none';
+
+        const formData = new FormData();
+        formData.append('subject', subject);
+        formData.append('file', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none';
+            if (data.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            } else {
+                document.getElementById('errorText').textContent = data.error || 'Upload failed';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('errorText').textContent = 'Error: ' + error.message;
+            document.getElementById('errorMessage').style.display = 'block';
+        });
+    });
+</script>
+{% endblock %}
