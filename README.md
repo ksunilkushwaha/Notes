@@ -32,7 +32,7 @@
 - **Pillow 10.1.0** - Python Imaging Library for image compression and optimization
 
 ### Deployment Platform
-- **Render.com** - Cloud platform (free tier) for hosting the application
+- **Pythonanywhere.com** - Cloud platform (free tier) for hosting the application
 - **GitHub** - Version control and repository hosting
 
 ---
