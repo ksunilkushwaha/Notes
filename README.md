@@ -6,7 +6,7 @@
 
 **Description:** A web-based application that enables students to upload, view, and download study notes across five subjects (Physics, Mathematics, Computer Science, English, and Engineering Drawing). The platform features image compression, subject categorization, and a responsive user interface.
 
-**Deployment:** Free tier on Render.com
+**Deployment:** Free tier on pythonanywhere.com
 
 ---
 
